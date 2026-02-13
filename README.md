@@ -2,11 +2,13 @@
 
 # microGPT.js
 
-### Train a GPT — entirely in your browser.
+### The most atomic way to train and inference a GPT in pure, dependency-free JavaScript.
 
-A pure-JavaScript GPT implementation with live training, inference, and stunning 3D visualizations.  
-No Python. No backend. No ML frameworks. Just your browser.
+A complete transformer implementation — custom autograd engine, multi-head attention, Adam optimizer — all in a single file with zero ML dependencies. Faithful translation of [Karpathy's microgpt.py](https://gist.github.com/kylemath/58607dbafcf2315f9c958e1753f70fa9).
 
+[![npm](https://img.shields.io/npm/v/microgptjs?style=flat-square&color=CB3837&logo=npm&logoColor=white)](https://www.npmjs.com/package/microgptjs)
+[![Bundle Size](https://img.shields.io/badge/bundle-12.5kB-brightgreen?style=flat-square)](packages/microgptjs)
+[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-blue?style=flat-square)](packages/microgptjs/package.json)
 [![Built with React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vite.dev)
 [![Three.js](https://img.shields.io/badge/Three.js-3D-000000?style=flat-square&logo=three.js&logoColor=white)](https://threejs.org)
@@ -14,15 +16,99 @@ No Python. No backend. No ML frameworks. Just your browser.
 [![Deploy to Netlify](https://img.shields.io/badge/Netlify-Ready-00C7B7?style=flat-square&logo=netlify&logoColor=white)](#deploy-to-netlify)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Ready-222222?style=flat-square&logo=github&logoColor=white)](#deploy-to-github-pages)
 
+</div>
+
 ---
 
-> **Inspired by [Andrej Karpathy's microgpt.py](https://gist.github.com/kylemath/58607dbafcf2315f9c958e1753f70fa9)** — ported to JavaScript with a custom autograd engine, full transformer pipeline, and interactive visualizations.
+## Install the Toolbox
+
+```bash
+npm install microgptjs
+```
+
+That's it. Zero dependencies. Works in the browser, Node.js, Deno, Bun, and Web Workers.
+
+---
+
+## Hello World
+
+```js
+import { MicroGPT } from 'microgptjs';
+
+// 1. Create a model
+const model = new MicroGPT({
+  nEmbd: 16,      // embedding dimension
+  nHead: 4,       // attention heads
+  nLayer: 1,      // transformer layers
+  blockSize: 16,  // context window
+  learningRate: 0.01,
+  numSteps: 500,
+});
+
+// 2. Load training data (one example per line)
+model.loadData(`alice
+bob
+charlie
+david
+emma
+frank`);
+
+// 3. Initialize parameters
+const info = model.initParams();
+console.log(`Model: ${info.numParams} params, vocab: ${info.vocabSize}`);
+
+// 4. Train
+for (let i = 0; i < 500; i++) {
+  const { step, loss } = model.trainStep();
+  if (step % 100 === 0) console.log(`Step ${step}: loss=${loss.toFixed(4)}`);
+}
+
+// 5. Generate
+console.log(model.generate(0.8).text);  // → a new name!
+```
+
+Save as `hello.mjs` and run:
+
+```bash
+node hello.mjs
+```
+
+### What's in the box?
+
+| Export | What it is |
+|--------|-----------|
+| `MicroGPT` | Full GPT — training, inference, embeddings, loss history |
+| `Value` | Autograd scalar with computation graph and `.backward()` |
+| `linear` | Matrix-vector multiply (`y = Wx`) |
+| `softmax` | Numerically stable softmax |
+| `rmsnorm` | RMS normalization |
+| `SeededRandom` | Deterministic PRNG (Mulberry32) |
+
+For full API docs, see the [package README](packages/microgptjs/README.md).
+
+---
+
+<div align="center">
+
+## Interactive Demo
+
+### Train a GPT — entirely in your browser.
+
+Live training, inference, and stunning 3D visualizations.
+No Python. No backend. No ML frameworks. Just your browser.
+
+> **[Launch the demo](https://kylemath.github.io/microgptJS)**
 
 </div>
 
 ---
 
 ## What is this?
+
+This repo contains two things:
+
+1. **`microgptjs`** — an [installable npm package](packages/microgptjs) with the pure-JS GPT toolbox
+2. **The interactive demo** — a React app with 3D visualizations that uses the toolbox
 
 **microGPT.js** is an educational, fully client-side GPT that trains on character-level data (names) right in your browser tab. It includes:
 
@@ -64,7 +150,7 @@ No Python. No backend. No ML frameworks. Just your browser.
 
 ```bash
 # Clone the repo
-git clone https://github.com/<your-username>/microgptJS.git
+git clone https://github.com/kylemath/microgptJS.git
 cd microgptJS
 
 # Install dependencies
@@ -112,38 +198,99 @@ npm run lint      # Run ESLint
 
 ---
 
+## Deployment
+
+The production build is a static site in `dist/`. Deploy it anywhere that serves static files.
+
+### Deploy to Netlify
+
+The repo includes a `netlify.toml` — just connect your repo and it works automatically.
+
+**One-click:**
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/kylemath/microgptJS)
+
+**Or manually:**
+
+1. Push this repo to GitHub
+2. Go to [app.netlify.com](https://app.netlify.com) → **Add new site** → **Import an existing project**
+3. Select your repo — build settings are auto-detected from `netlify.toml`
+4. Click **Deploy site**
+
+### Deploy to GitHub Pages
+
+1. Install the deploy dependency:
+
+   ```bash
+   npm install --save-dev gh-pages
+   ```
+
+2. Add a deploy script to `package.json`:
+
+   ```json
+   "scripts": {
+     "deploy": "npm run build && gh-pages -d dist"
+   }
+   ```
+
+3. Set the correct base path in `vite.config.js`:
+
+   ```js
+   export default defineConfig({
+     base: '/<repo-name>/',   // e.g. '/microgptJS/'
+     plugins: [react()],
+   })
+   ```
+
+4. Deploy:
+
+   ```bash
+   npm run deploy
+   ```
+
+> **Tip:** If you're deploying to `<username>.github.io` (root), set `base: '/'` instead.
+
+---
+
 ## Project Structure
 
 ```
 microgptJS/
-├── index.html              # Entry HTML
-├── vite.config.js          # Vite configuration
-├── package.json            # Dependencies & scripts
-├── netlify.toml            # Netlify deployment config
-├── public/
-│   ├── vite.svg
-│   └── _redirects          # Netlify SPA fallback
-└── src/
-    ├── main.jsx            # React entry point
-    ├── components/
-    │   ├── App.jsx         # Root app with tab navigation
-    │   ├── TrainingPanel   # Hyperparameter controls & training
-    │   ├── InferencePanel  # Text generation UI
-    │   ├── LossChart       # Canvas-based loss curve
-    │   ├── NetworkViz      # 3D transformer architecture
-    │   ├── AttentionViz    # 3D attention weight bars
-    │   ├── EmbeddingViz    # 3D token embedding scatter
-    │   └── CodeComparison  # Python ↔ JS side-by-side
-    ├── lib/
-    │   └── microgpt.js     # Core GPT: autograd, layers, optimizer
-    ├── workers/
-    │   └── training.worker.js  # Off-thread training loop
-    ├── hooks/
-    │   └── useWorker.js    # React ↔ Worker bridge
-    ├── data/
-    │   ├── microgpt.py     # Original Python reference
-    │   └── pythonSource.js # Annotated sections for comparison
-    └── styles/             # Component CSS files
+├── packages/
+│   └── microgptjs/             # ← The npm package (installable toolbox)
+│       ├── src/
+│       │   ├── microgpt.js     # Core GPT: autograd, transformer, optimizer
+│       │   ├── index.js        # Package entry point
+│       │   └── index.d.ts      # TypeScript type definitions
+│       ├── package.json        # npm package config
+│       ├── vite.config.js      # Library build (ESM + CJS)
+│       └── README.md           # Package documentation
+├── src/                        # ← The interactive demo app
+│   ├── main.jsx                # React entry point
+│   ├── components/
+│   │   ├── App.jsx             # Root app with tab navigation
+│   │   ├── TrainingPanel       # Hyperparameter controls & training
+│   │   ├── InferencePanel      # Text generation UI
+│   │   ├── LossChart           # Canvas-based loss curve
+│   │   ├── NetworkViz          # 3D transformer architecture
+│   │   ├── AttentionViz        # 3D attention weight bars
+│   │   ├── EmbeddingViz        # 3D token embedding scatter
+│   │   ├── CodeComparison      # Python ↔ JS side-by-side
+│   │   └── InstallGuide        # npm package install & usage guide
+│   ├── lib/
+│   │   └── microgpt.js         # (legacy — demo now imports from package)
+│   ├── workers/
+│   │   └── training.worker.js  # Off-thread training loop
+│   ├── hooks/
+│   │   └── useWorker.js        # React ↔ Worker bridge
+│   ├── data/
+│   │   ├── microgpt.py         # Original Python reference
+│   │   └── pythonSource.js     # Annotated sections for comparison
+│   └── styles/                 # Component CSS files
+├── index.html                  # Entry HTML
+├── vite.config.js              # Demo app Vite config
+├── package.json                # Workspace root (npm workspaces)
+└── netlify.toml                # Netlify deployment config
 ```
 
 ---
@@ -182,7 +329,7 @@ MIT — do whatever you want with it.
 
 <div align="center">
 
-**[Live Demo](#)** · **[Report Bug](../../issues)** · **[Request Feature](../../issues)**
+**[Live Demo](https://kylemath.github.io/microgptJS)** · **[Report Bug](https://github.com/kylemath/microgptJS/issues)** · **[Request Feature](https://github.com/kylemath/microgptJS/issues)**
 
 Built with curiosity and JavaScript.
 

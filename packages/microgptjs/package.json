@@ -1,0 +1,50 @@
+{
+  "name": "microgptjs",
+  "version": "1.0.0",
+  "description": "The most atomic way to train and inference a GPT in pure, dependency-free JavaScript. A faithful translation of Karpathy's microgpt.py.",
+  "type": "module",
+  "main": "./dist/microgptjs.cjs",
+  "module": "./dist/microgptjs.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/microgptjs.js",
+      "require": "./dist/microgptjs.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "vite build && cp src/index.d.ts dist/index.d.ts",
+    "dev": "vite build --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "gpt",
+    "transformer",
+    "machine-learning",
+    "deep-learning",
+    "autograd",
+    "neural-network",
+    "language-model",
+    "educational",
+    "karpathy",
+    "microgpt",
+    "zero-dependency"
+  ],
+  "author": "Kyle Mathewson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kylemath/microgptJS"
+  },
+  "homepage": "https://github.com/kylemath/microgptJS#readme",
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}

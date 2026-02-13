@@ -2,7 +2,7 @@
  * Web Worker for running MicroGPT training and inference off the main thread.
  * Communicates with the React app via postMessage.
  */
-import { MicroGPT } from '../lib/microgpt.js';
+import { MicroGPT } from 'microgptjs';
 
 let model = null;
 let isTraining = false;

@@ -3,6 +3,7 @@ import { useWorker } from '../hooks/useWorker';
 import TrainingPanel from './TrainingPanel';
 import InferencePanel from './InferencePanel';
 import CodeComparison from './CodeComparison';
+import InstallGuide from './InstallGuide';
 import LossChart from './LossChart';
 import NetworkViz from './NetworkViz';
 import AttentionViz from './AttentionViz';
@@ -33,6 +34,7 @@ export default function App() {
 
   const tabs = [
     { id: 'train', label: 'Train & Visualize' },
+    { id: 'install', label: 'npm Package' },
     { id: 'code', label: 'Code Comparison' },
   ];
 
@@ -75,7 +77,7 @@ export default function App() {
 
       {/* Main Content */}
       <main className="app__main">
-        {activeTab === 'train' ? (
+        {activeTab === 'train' && (
           <div className="app__train-layout">
             {/* Left sidebar: controls */}
             <aside className="app__sidebar">
@@ -117,9 +119,9 @@ export default function App() {
               </div>
             </section>
           </div>
-        ) : (
-          <CodeComparison />
         )}
+        {activeTab === 'install' && <InstallGuide />}
+        {activeTab === 'code' && <CodeComparison />}
       </main>
 
       {/* Footer */}
