@@ -1,0 +1,11 @@
+{
+  "id": "microgptJS",
+  "title": "MicrogptJS",
+  "oneLiner": "A web demo of a js port of microgpt",
+  "demoUrl": "https://kylemath.github.io/microgptJS",
+  "screenshot": "https://raw.githubusercontent.com/kylemath/microgptJS/main/screenshot.png",
+  "kind": "project",
+  "categories": ["AI", "webapp", "demo"],
+  "tags": ["AI", "webapp", "gpt"],
+  "status": "published"
+}
